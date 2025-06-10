@@ -24,7 +24,7 @@ This is a Trello-like task management application built with React and TypeScrip
 
 2. Navigate to the frontend directory:
 
-   cd trello-clone/frontend
+   cd task-manager/frontend
 
 3. Install the frontend dependencies:
 

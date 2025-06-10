@@ -1,5 +1,5 @@
 {
-  "name": "trello-clone-backend",
+  "name": "task-manager-backend",
   "version": "1.0.0",
   "main": "src/app.ts",
   "scripts": {

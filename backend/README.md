@@ -26,7 +26,7 @@ This is the backend for the Trello-like task management application built using 
 1. Clone the repository:
    ```
    git clone <repository-url>
-   cd trello-clone/backend
+   cd task-manager/backend
    ```
 
 2. Install dependencies:
