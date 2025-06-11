@@ -1,6 +1,6 @@
-# Trello Clone Backend
+# Backend
 
-This is the backend for the Trello-like task management application built using Node.js and Express with TypeScript.
+This is the backend for the task management application built using Node.js and Express with TypeScript.
 
 ## Project Structure
 
