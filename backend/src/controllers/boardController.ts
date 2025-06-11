@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import jwt from 'jsonwebtoken';
 
 export class BoardController {
     private boardsFilePath = path.join(__dirname, '../../boards.json');
@@ -147,3 +148,21 @@ export class BoardController {
         }
     }
 }
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+
+function authenticateJWT(req: any, res: any, next: any) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+            if (err) return res.status(403).json({ error: 'Invalid token' });
+            req.user = user;
+            next();
+        });
+    } else {
+        res.status(401).json({ error: 'No token provided' });
+    }
+}
+
+export { authenticateJWT };

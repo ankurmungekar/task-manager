@@ -2,21 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import Board from './components/Board';
 import { Board as BoardType } from './types';
+import Login from './components/Login';
+import Signup from './components/Signup';
 
 const App: React.FC = () => {
     const [boards, setBoards] = useState<BoardType[]>([]);
     const [lists, setLists] = useState<BoardType["lists"]>([]);
+    const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+    const [showSignup, setShowSignup] = useState(false);
 
     useEffect(() => {
+        if (!token) return;
         const fetchBoards = async () => {
-            const response = await fetch('/api/boards');
+            const response = await fetch('/api/boards', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             const data = await response.json();
             setBoards(data);
             if (data.length > 0) setLists(data[0].lists);
         };
-
         fetchBoards();
-    }, []);
+    }, [token]);
+
+    const handleLogin = (jwt: string) => {
+        setToken(jwt);
+        localStorage.setItem('token', jwt);
+    };
+
+    const handleLogout = () => {
+        setToken(null);
+        localStorage.removeItem('token');
+    };
 
     const onDragEnd = async (result: DropResult) => {
         const { source, destination } = result;
@@ -65,14 +81,27 @@ const App: React.FC = () => {
         }
     };
 
+    if (!token) {
+        return showSignup ? (
+            <Signup onSignup={() => setShowSignup(false)} setShowSignup={setShowSignup} />
+        ) : (
+            <Login onLogin={handleLogin} setShowSignup={setShowSignup} />
+        );
+    }
+
     return (
-        <DragDropContext onDragEnd={onDragEnd}>
-            <div className="App">
-                {boards.length > 0 && (
-                    <Board board={boards[0]} lists={lists} setLists={setLists} />
-                )}
+        <>
+            <div className="flex justify-end p-4">
+                <button className="bg-red-500 text-white px-4 py-1 rounded" onClick={handleLogout}>Logout</button>
             </div>
-        </DragDropContext>
+            <DragDropContext onDragEnd={onDragEnd}>
+                <div className="App">
+                    {boards.length > 0 && (
+                        <Board board={boards[0]} lists={lists} setLists={setLists} />
+                    )}
+                </div>
+            </DragDropContext>
+        </>
     );
 };
 

@@ -33,10 +33,10 @@ const AddCardModal: React.FC<{
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-96 border border-blue-100 animate-fade-in">
+      <div className="bg-white rounded-md shadow p-6 w-96 border border-blue-100 animate-fade-in">
         <h3 className="text-xl font-bold mb-5 text-blue-800 flex items-center gap-2">
           <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-          Add New Card
+          Add Task
         </h3>
         <form onSubmit={handleSubmit}>
           <input
@@ -108,7 +108,7 @@ const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList 
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className="bg-white rounded-xl shadow-lg p-6 w-80 mr-4 flex-shrink-0 border border-blue-100 hover:shadow-2xl transition-all duration-200"
+          className="bg-white rounded-md shadow p-4 w-72 mr-2 flex-shrink-0 border border-blue-100 hover:shadow-md transition-all duration-200"
         >
           <div className="flex items-center gap-2 mb-5 relative">
             <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>

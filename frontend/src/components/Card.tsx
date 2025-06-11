@@ -8,7 +8,7 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ card, onDelete }) => {
     return (
-        <div className="bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-xl shadow p-5 mb-4 border border-blue-100 hover:shadow-xl transition-all duration-200 relative">
+        <div className="bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-md shadow p-4 mb-2 border border-blue-100 hover:shadow-md transition-all duration-200 relative">
             <button
                 className="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-lg font-bold z-10"
                 title="Delete card"
