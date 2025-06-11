@@ -1,6 +1,6 @@
 # Frontend Task Management App
 
-This is a Trello-like task management application built with React and TypeScript for the frontend and Node.js/Express for the backend.
+This is a task management application built with React and TypeScript for the frontend and Node.js/Express for the backend.
 
 ## Features
 
