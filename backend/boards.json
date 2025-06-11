@@ -8,28 +8,16 @@
         "title": "ToDo",
         "cards": [
           {
-            "id": "1749641557781",
-            "title": "new",
-            "description": "wecwec",
-            "dueDate": "2025-06-12"
-          },
-          {
-            "id": "1749641652012",
-            "title": "kewbkjfbwhjelbfvhw",
-            "description": "wefjkbkwhjebvfj",
-            "dueDate": "2025-06-27"
-          },
-          {
-            "id": "1749641583847",
-            "title": "wjbeckjw",
-            "description": "ewcewr",
-            "dueDate": "2025-06-13"
+            "id": "1749642494115",
+            "title": "wejfkbjwhvf",
+            "description": "wefnj wef",
+            "dueDate": ""
           }
         ]
       },
       {
-        "id": "1749641657344",
-        "title": "In Progress",
+        "id": "1749642508687",
+        "title": "in Progress",
         "cards": []
       }
     ]

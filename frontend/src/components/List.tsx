@@ -8,6 +8,7 @@ interface ListProps {
   index: number;
   lists: ListType[];
   setLists: React.Dispatch<React.SetStateAction<ListType[]>>;
+  onDeleteList: (listId: string) => void;
 }
 
 const AddCardModal: React.FC<{
@@ -67,7 +68,7 @@ const AddCardModal: React.FC<{
   );
 };
 
-const List: React.FC<ListProps> = ({ list, index, lists, setLists }) => {
+const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList }) => {
   const [showModal, setShowModal] = useState(false);
 
   // Only show + button on the first list
@@ -88,32 +89,56 @@ const List: React.FC<ListProps> = ({ list, index, lists, setLists }) => {
     }
   };
 
+  const handleDeleteCard = async (cardId: string) => {
+    try {
+      // Assuming boardId is 1 for now
+      const response = await fetch(`/api/boards/1/lists/${list.id}/cards/${cardId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete card');
+      setLists(lists => lists.map(l => l.id === list.id ? { ...l, cards: l.cards.filter(c => c.id !== cardId) } : l));
+    } catch (err) {
+      alert('Error deleting card.');
+    }
+  };
+
   return (
     <Droppable droppableId={list.id}>
       {(provided) => (
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className="bg-white rounded-2xl shadow-lg p-6 w-80 mr-4 flex-shrink-0 border border-blue-100 hover:shadow-2xl transition-all duration-200"
+          className="bg-white rounded-xl shadow-lg p-6 w-80 mr-4 flex-shrink-0 border border-blue-100 hover:shadow-2xl transition-all duration-200"
         >
-          <h3 className="text-lg font-bold mb-5 text-blue-700 tracking-wide flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-5 relative">
             <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-            {list.title}
-          </h3>
-          {showAddCard && (
-            <>
+            <h3 className="text-lg font-bold text-blue-700 tracking-wide">
+              {list.title}
+            </h3>
+            {showAddCard && (
               <button
-                className="mb-3 px-3 py-1 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition flex items-center gap-1"
+                className="ml-auto px-3 py-1 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition flex items-center gap-1"
                 onClick={() => setShowModal(true)}
               >
-                <span className="text-lg">+</span> Add Card
+                <span className="text-lg">+</span> Add Task
               </button>
-              <AddCardModal
-                isOpen={showModal}
-                onClose={() => setShowModal(false)}
-                onAdd={handleAddCard}
-              />
-            </>
+            )}
+            {index !== 0 && (
+              <button
+                className="absolute top-0 right-0 text-gray-400 hover:text-red-500 text-lg font-bold z-10"
+                title="Delete list"
+                onClick={() => onDeleteList(list.id)}
+              >
+                ×
+              </button>
+            )}
+          </div>
+          {showAddCard && (
+            <AddCardModal
+              isOpen={showModal}
+              onClose={() => setShowModal(false)}
+              onAdd={handleAddCard}
+            />
           )}
           {list.cards.map((card, cardIndex) => (
             <Draggable key={card.id} draggableId={card.id} index={cardIndex}>
@@ -123,7 +148,7 @@ const List: React.FC<ListProps> = ({ list, index, lists, setLists }) => {
                   {...provided.draggableProps}
                   {...provided.dragHandleProps}
                 >
-                  <Card card={card} />
+                  <Card card={card} onDelete={handleDeleteCard} />
                 </div>
               )}
             </Draggable>

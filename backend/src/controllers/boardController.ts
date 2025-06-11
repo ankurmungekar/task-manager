@@ -112,4 +112,38 @@ export class BoardController {
             res.status(500).json({ error: 'Failed to move card.' });
         }
     }
+
+    public async deleteCardFromList(req: any, res: any) {
+        try {
+            const { boardId, listId, cardId } = req.params;
+            const boards = await this.readBoards();
+            const board = boards.find((b: any) => b.id.toString() === boardId);
+            if (!board) return res.status(404).json({ error: 'Board not found.' });
+            const list = board.lists.find((l: any) => l.id === listId);
+            if (!list) return res.status(404).json({ error: 'List not found.' });
+            const cardIndex = list.cards.findIndex((c: any) => c.id === cardId);
+            if (cardIndex === -1) return res.status(404).json({ error: 'Card not found.' });
+            list.cards.splice(cardIndex, 1);
+            await this.writeBoards(boards);
+            res.status(200).json({ success: true });
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to delete card.' });
+        }
+    }
+
+    public async deleteListFromBoard(req: any, res: any) {
+        try {
+            const { boardId, listId } = req.params;
+            const boards = await this.readBoards();
+            const board = boards.find((b: any) => b.id.toString() === boardId);
+            if (!board) return res.status(404).json({ error: 'Board not found.' });
+            const listIndex = board.lists.findIndex((l: any) => l.id === listId);
+            if (listIndex === -1) return res.status(404).json({ error: 'List not found.' });
+            board.lists.splice(listIndex, 1);
+            await this.writeBoards(boards);
+            res.status(200).json({ success: true });
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to delete list.' });
+        }
+    }
 }

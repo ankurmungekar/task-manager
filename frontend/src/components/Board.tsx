@@ -27,6 +27,18 @@ const Board: React.FC<BoardProps> = ({ board, lists, setLists }) => {
     }
   };
 
+  const handleDeleteList = async (listId: string) => {
+    try {
+      const response = await fetch(`/api/boards/${board.id}/lists/${listId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete list');
+      setLists(prev => prev.filter(l => l.id !== listId));
+    } catch (err) {
+      alert('Error deleting list.');
+    }
+  };
+
   return (
     <div className="p-10 min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white font-sans">
       <div className="max-w-7xl mx-auto">
@@ -48,6 +60,7 @@ const Board: React.FC<BoardProps> = ({ board, lists, setLists }) => {
               index={index}
               lists={lists}
               setLists={setLists}
+              onDeleteList={handleDeleteList}
             />
           ))}
         </div>
