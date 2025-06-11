@@ -2,6 +2,7 @@ export interface Board {
     id: string;
     title: string;
     userId: string; // user who owns the board
+    collaborators: string[]; // user IDs of collaborators
     lists: List[];
 }
 

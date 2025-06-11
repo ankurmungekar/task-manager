@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { Socket } from 'socket.io-client';
 import Card from './Card';
 import { List as ListType } from '../types';
 
@@ -10,6 +11,8 @@ interface ListProps {
   setLists: React.Dispatch<React.SetStateAction<ListType[]>>;
   onDeleteList: (listId: string) => void;
   boardId: string | number;
+  socket?: Socket;
+  username?: string;
 }
 
 const AddCardModal: React.FC<{
@@ -69,11 +72,35 @@ const AddCardModal: React.FC<{
   );
 };
 
-const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList, boardId }) => {
+const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList, boardId, socket, username }) => {
   const [showModal, setShowModal] = useState(false);
+  const [editingBy, setEditingBy] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Only show + button on the first list
   const showAddCard = index === 0;
+
+  useEffect(() => {
+    if (!socket) return;
+    const handleEditingStatus = (data: { itemId: string; username: string; editing: boolean }) => {
+      if (data.itemId === list.id && data.username !== username) {
+        setEditingBy(data.editing ? data.username : null);
+      }
+    };
+    socket.on('editingStatus', handleEditingStatus);
+    return () => { socket.off('editingStatus', handleEditingStatus); };
+  }, [socket, list.id, username]);
+
+  const handleFocus = () => {
+    if (socket && username) {
+      socket.emit('editingStatus', { boardId, itemId: list.id, username, editing: true });
+    }
+  };
+  const handleBlur = () => {
+    if (socket && username) {
+      socket.emit('editingStatus', { boardId, itemId: list.id, username, editing: false });
+    }
+  };
 
   const handleAddCard = async (card: { title: string; description: string; dueDate: string }) => {
     try {
@@ -118,9 +145,17 @@ const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList,
         >
           <div className="flex items-center gap-2 mb-5 relative">
             <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-            <h3 className="text-lg font-bold text-blue-700 tracking-wide">
-              {list.title}
-            </h3>
+            <input
+              ref={inputRef}
+              className="text-lg font-bold text-blue-700 tracking-wide bg-transparent border-none outline-none"
+              value={list.title}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              readOnly
+            />
+            {editingBy && (
+              <span className="ml-2 text-xs text-orange-600 animate-pulse">{editingBy} is editing...</span>
+            )}
             {showAddCard && (
               <button
                 className="ml-auto px-3 py-1 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition flex items-center gap-1"

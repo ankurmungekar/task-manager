@@ -3,6 +3,7 @@
     "id": 1,
     "title": "wefw",
     "userId": "1749652599515",
+    "collaborators": [],
     "lists": [
       {
         "id": "1749652606661",
@@ -51,6 +52,7 @@
     "id": 2,
     "title": "xftcghvjbknl",
     "userId": "1749652901609",
+    "collaborators": [],
     "lists": [
       {
         "id": "1749652913581",
@@ -63,6 +65,80 @@
             "description": "kjb",
             "dueDate": "2025-06-12",
             "userId": "1749652901609"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "yfyijkjghj",
+    "userId": "1749653350498",
+    "collaborators": [
+      "1749652599515",
+      "1749652901609"
+    ],
+    "lists": [
+      {
+        "id": "1749653504904",
+        "title": "ghjvhvk.jbk.",
+        "userId": "1749653350498",
+        "cards": [
+          {
+            "id": "1749653545460",
+            "title": "ergerg",
+            "description": "ergegre",
+            "dueDate": "2025-06-19",
+            "userId": "1749653350498"
+          },
+          {
+            "id": "1749656090345",
+            "title": "ergegf",
+            "description": "wegegr",
+            "dueDate": "2025-06-12",
+            "userId": "1749653350498"
+          }
+        ]
+      },
+      {
+        "id": "1749653519366",
+        "title": "ergerge",
+        "userId": "1749653350498",
+        "cards": [
+          {
+            "id": "1749653516427",
+            "title": "ergerg",
+            "description": "gerge",
+            "dueDate": "2025-07-04",
+            "userId": "1749653350498"
+          }
+        ]
+      },
+      {
+        "id": "1749653522851",
+        "title": "ergerge",
+        "userId": "1749653350498",
+        "cards": [
+          {
+            "id": "1749653534195",
+            "title": "ergeg",
+            "description": "ergerg",
+            "dueDate": "2025-06-12",
+            "userId": "1749653350498"
+          },
+          {
+            "id": "1749653552760",
+            "title": "egeg",
+            "description": "egerge",
+            "dueDate": "2025-06-12",
+            "userId": "1749653350498"
+          },
+          {
+            "id": "1749653510389",
+            "title": "ergegr",
+            "description": "egrerg",
+            "dueDate": "2025-06-05",
+            "userId": "1749653350498"
           }
         ]
       }

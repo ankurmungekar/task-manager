@@ -12,4 +12,6 @@ export function setBoardRoutes(app: Router) {
     app.patch('/api/boards/:boardId/move-card', authenticateJWT, boardController.moveCard.bind(boardController));
     app.delete('/api/boards/:boardId/lists/:listId/cards/:cardId', authenticateJWT, boardController.deleteCardFromList.bind(boardController));
     app.delete('/api/boards/:boardId/lists/:listId', authenticateJWT, boardController.deleteListFromBoard.bind(boardController));
+    app.post('/api/boards/:boardId/collaborators', authenticateJWT, boardController.addCollaborator.bind(boardController));
+    app.delete('/api/boards/:boardId/collaborators', authenticateJWT, boardController.removeCollaborator.bind(boardController));
 }

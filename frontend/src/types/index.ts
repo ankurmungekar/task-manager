@@ -14,5 +14,7 @@ export interface List {
 export interface Board {
   id: string;
   title: string;
+  userId: string; // user who owns the board
   lists: List[];
+  collaborators?: string[]; // user IDs of collaborators
 }
