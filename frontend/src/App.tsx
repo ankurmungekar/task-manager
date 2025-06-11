@@ -23,7 +23,6 @@ const App: React.FC = () => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <div className="App">
-                <h1>Kanban Board</h1>
                 {boards.map(board => (
                     <Board key={board.id} board={board} />
                 ))}

@@ -8,9 +8,9 @@ interface BoardProps {
 
 const Board: React.FC<BoardProps> = ({ board }) => {
   return (
-    <div className="board">
-      <h2>{board.title}</h2>
-      <div className="lists">
+    <div className="p-8 min-h-screen bg-blue-50">
+      <h2 className="text-2xl font-bold mb-6 text-blue-800">{board.title}</h2>
+      <div className="flex flex-row overflow-x-auto pb-4">
         {board.lists.map((list, index) => (
           <List key={list.id} list={list} index={index} />
         ))}

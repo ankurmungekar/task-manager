@@ -7,9 +7,9 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ card }) => {
     return (
-        <div className="card">
-            <h4>{card.title}</h4>
-            {card.description && <p>{card.description}</p>}
+        <div className="bg-white rounded shadow p-4 mb-3 border border-gray-200 hover:shadow-lg transition">
+            <h4 className="font-semibold text-gray-800 mb-1">{card.title}</h4>
+            {card.description && <p className="text-gray-600 text-sm">{card.description}</p>}
         </div>
     );
 };
