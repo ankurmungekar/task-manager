@@ -2,6 +2,39 @@
   {
     "id": 1,
     "title": "Kanban Board",
-    "lists": []
+    "lists": [
+      {
+        "id": "1749640337247",
+        "title": "To do",
+        "cards": [
+          {
+            "id": "1749640400687",
+            "title": "jnwkf",
+            "description": ""
+          },
+          {
+            "id": "1749640405463",
+            "title": "kjwbejhcvwe",
+            "description": ""
+          },
+          {
+            "id": "1749640647628",
+            "title": "vjvhgv",
+            "description": "hjvghchgcg"
+          },
+          {
+            "id": "1749640710296",
+            "title": "wvcwe",
+            "description": "wefwef",
+            "dueDate": "2025-06-12"
+          }
+        ]
+      },
+      {
+        "id": "1749640421322",
+        "title": "In Progress",
+        "cards": []
+      }
+    ]
   }
 ]

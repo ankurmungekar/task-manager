@@ -60,4 +60,35 @@ export class BoardController {
             res.status(500).json({ error: 'Failed to add list to board.' });
         }
     }
+
+    public async addCardToList(req: any, res: any) {
+        try {
+            const boardId = req.params.boardId;
+            const listId = req.params.listId;
+            const { title, description, dueDate } = req.body;
+            if (!title) {
+                return res.status(400).json({ error: 'Card title is required.' });
+            }
+            const boards = await this.readBoards();
+            const board = boards.find((b: any) => b.id.toString() === boardId);
+            if (!board) {
+                return res.status(404).json({ error: 'Board not found.' });
+            }
+            const list = board.lists.find((l: any) => l.id === listId);
+            if (!list) {
+                return res.status(404).json({ error: 'List not found.' });
+            }
+            const newCard = {
+                id: Date.now().toString(),
+                title,
+                description: description || '',
+                dueDate: dueDate || '',
+            };
+            list.cards.push(newCard);
+            await this.writeBoards(boards);
+            res.status(201).json(newCard);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to add card to list.' });
+        }
+    }
 }
