@@ -9,6 +9,7 @@ interface ListProps {
   lists: ListType[];
   setLists: React.Dispatch<React.SetStateAction<ListType[]>>;
   onDeleteList: (listId: string) => void;
+  boardId: string | number;
 }
 
 const AddCardModal: React.FC<{
@@ -68,7 +69,7 @@ const AddCardModal: React.FC<{
   );
 };
 
-const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList }) => {
+const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList, boardId }) => {
   const [showModal, setShowModal] = useState(false);
 
   // Only show + button on the first list
@@ -76,9 +77,13 @@ const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList 
 
   const handleAddCard = async (card: { title: string; description: string; dueDate: string }) => {
     try {
-      const response = await fetch(`/api/boards/1/lists/${list.id}/cards`, {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/boards/${boardId}/lists/${list.id}/cards`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify(card),
       });
       if (!response.ok) throw new Error('Failed to add card');
@@ -91,9 +96,10 @@ const List: React.FC<ListProps> = ({ list, index, lists, setLists, onDeleteList 
 
   const handleDeleteCard = async (cardId: string) => {
     try {
-      // Assuming boardId is 1 for now
-      const response = await fetch(`/api/boards/1/lists/${list.id}/cards/${cardId}`, {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/boards/${boardId}/lists/${list.id}/cards/${cardId}`, {
         method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (!response.ok) throw new Error('Failed to delete card');
       setLists(lists => lists.map(l => l.id === list.id ? { ...l, cards: l.cards.filter(c => c.id !== cardId) } : l));

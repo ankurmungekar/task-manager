@@ -17,7 +17,10 @@ export class BoardController {
     public async getBoards(req: any, res: any) {
         try {
             const boards = await this.readBoards();
-            res.json(boards);
+            const userId = req.user?.id;
+            // Only return boards for the authenticated user
+            const userBoards = boards.filter((b: any) => b.userId === userId);
+            res.json(userBoards);
         } catch (err) {
             res.status(500).json({ error: 'Failed to read boards data.' });
         }
@@ -28,7 +31,8 @@ export class BoardController {
             const { title } = req.body;
             const boards = await this.readBoards();
             const nextId = boards.length > 0 ? Math.max(...boards.map((b: any) => b.id)) + 1 : 1;
-            const newBoard = { id: nextId, title, lists: [] };
+            const userId = req.user?.id;
+            const newBoard = { id: nextId, title, userId, lists: [] };
             boards.push(newBoard);
             await this.writeBoards(boards);
             res.status(201).json(newBoard);
@@ -45,13 +49,15 @@ export class BoardController {
                 return res.status(400).json({ error: 'List title is required.' });
             }
             const boards = await this.readBoards();
-            const board = boards.find((b: any) => b.id.toString() === boardId);
+            const board = boards.find((b: any) => b.id.toString() === boardId && b.userId === req.user?.id);
             if (!board) {
                 return res.status(404).json({ error: 'Board not found.' });
             }
+            const userId = req.user?.id;
             const newList = {
                 id: Date.now().toString(),
                 title,
+                userId,
                 cards: [],
             };
             board.lists.push(newList);
@@ -71,19 +77,21 @@ export class BoardController {
                 return res.status(400).json({ error: 'Card title is required.' });
             }
             const boards = await this.readBoards();
-            const board = boards.find((b: any) => b.id.toString() === boardId);
+            const board = boards.find((b: any) => b.id.toString() === boardId && b.userId === req.user?.id);
             if (!board) {
                 return res.status(404).json({ error: 'Board not found.' });
             }
-            const list = board.lists.find((l: any) => l.id === listId);
+            const list = board.lists.find((l: any) => l.id === listId && l.userId === req.user?.id);
             if (!list) {
                 return res.status(404).json({ error: 'List not found.' });
             }
+            const userId = req.user?.id;
             const newCard = {
                 id: Date.now().toString(),
                 title,
                 description: description || '',
                 dueDate: dueDate || '',
+                userId,
             };
             list.cards.push(newCard);
             await this.writeBoards(boards);
@@ -97,15 +105,16 @@ export class BoardController {
         try {
             const { boardId } = req.params;
             const { sourceListId, destListId, sourceIndex, destIndex } = req.body;
+            const userId = req.user?.id;
             const boards = await this.readBoards();
-            const board = boards.find((b: any) => b.id.toString() === boardId);
+            const board = boards.find((b: any) => b.id.toString() === boardId && b.userId === userId);
             if (!board) return res.status(404).json({ error: 'Board not found.' });
-            const sourceList = board.lists.find((l: any) => l.id === sourceListId);
-            const destList = board.lists.find((l: any) => l.id === destListId);
+            const sourceList = board.lists.find((l: any) => l.id === sourceListId && l.userId === userId);
+            const destList = board.lists.find((l: any) => l.id === destListId && l.userId === userId);
             if (!sourceList || !destList) return res.status(404).json({ error: 'List not found.' });
             if (sourceIndex < 0 || sourceIndex >= sourceList.cards.length) return res.status(400).json({ error: 'Invalid source index.' });
             const [movedCard] = sourceList.cards.splice(sourceIndex, 1);
-            if (!movedCard) return res.status(400).json({ error: 'Card not found at source index.' });
+            if (!movedCard || movedCard.userId !== userId) return res.status(400).json({ error: 'Card not found at source index or not owned by user.' });
             destList.cards.splice(destIndex, 0, movedCard);
             await this.writeBoards(boards);
             res.status(200).json({ success: true });
@@ -117,12 +126,13 @@ export class BoardController {
     public async deleteCardFromList(req: any, res: any) {
         try {
             const { boardId, listId, cardId } = req.params;
+            const userId = req.user?.id;
             const boards = await this.readBoards();
-            const board = boards.find((b: any) => b.id.toString() === boardId);
+            const board = boards.find((b: any) => b.id.toString() === boardId && b.userId === userId);
             if (!board) return res.status(404).json({ error: 'Board not found.' });
-            const list = board.lists.find((l: any) => l.id === listId);
+            const list = board.lists.find((l: any) => l.id === listId && l.userId === userId);
             if (!list) return res.status(404).json({ error: 'List not found.' });
-            const cardIndex = list.cards.findIndex((c: any) => c.id === cardId);
+            const cardIndex = list.cards.findIndex((c: any) => c.id === cardId && c.userId === userId);
             if (cardIndex === -1) return res.status(404).json({ error: 'Card not found.' });
             list.cards.splice(cardIndex, 1);
             await this.writeBoards(boards);
@@ -135,10 +145,11 @@ export class BoardController {
     public async deleteListFromBoard(req: any, res: any) {
         try {
             const { boardId, listId } = req.params;
+            const userId = req.user?.id;
             const boards = await this.readBoards();
-            const board = boards.find((b: any) => b.id.toString() === boardId);
+            const board = boards.find((b: any) => b.id.toString() === boardId && b.userId === userId);
             if (!board) return res.status(404).json({ error: 'Board not found.' });
-            const listIndex = board.lists.findIndex((l: any) => l.id === listId);
+            const listIndex = board.lists.findIndex((l: any) => l.id === listId && l.userId === userId);
             if (listIndex === -1) return res.status(404).json({ error: 'List not found.' });
             board.lists.splice(listIndex, 1);
             await this.writeBoards(boards);

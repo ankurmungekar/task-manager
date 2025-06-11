@@ -4,12 +4,25 @@ import Board from './components/Board';
 import { Board as BoardType } from './types';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import { jwtDecode } from 'jwt-decode';
 
 const App: React.FC = () => {
     const [boards, setBoards] = useState<BoardType[]>([]);
     const [lists, setLists] = useState<BoardType["lists"]>([]);
     const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
     const [showSignup, setShowSignup] = useState(false);
+    const [username, setUsername] = useState<string | null>(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded: any = jwtDecode(token);
+                return decoded.username;
+            } catch {
+                return null;
+            }
+        }
+        return null;
+    });
 
     useEffect(() => {
         if (!token) return;
@@ -27,11 +40,20 @@ const App: React.FC = () => {
     const handleLogin = (jwt: string) => {
         setToken(jwt);
         localStorage.setItem('token', jwt);
+        try {
+            const decoded: any = jwtDecode(jwt);
+            setUsername(decoded.username);
+            localStorage.setItem('username', decoded.username);
+        } catch {
+            setUsername(null);
+        }
     };
 
     const handleLogout = () => {
         setToken(null);
+        setUsername(null);
         localStorage.removeItem('token');
+        localStorage.removeItem('username');
     };
 
     const onDragEnd = async (result: DropResult) => {
@@ -63,9 +85,13 @@ const App: React.FC = () => {
         // Persist to backend
         const boardId = boards[0]?.id;
         if (boardId) {
+            const token = localStorage.getItem('token');
             await fetch(`/api/boards/${boardId}/move-card`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify({
                     sourceListId: source.droppableId,
                     destListId: destination.droppableId,
@@ -74,7 +100,9 @@ const App: React.FC = () => {
                 })
             });
             // Fetch updated board data
-            const response = await fetch('/api/boards');
+            const response = await fetch('/api/boards', {
+                headers: token ? { Authorization: `Bearer ${token}` } : {}
+            });
             const data = await response.json();
             setBoards(data);
             if (data.length > 0) setLists(data[0].lists);
@@ -89,9 +117,47 @@ const App: React.FC = () => {
         );
     }
 
+    // Show create board screen if user has no boards
+    if (boards.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50">
+                <div className="bg-white p-8 rounded shadow w-96 flex flex-col items-center">
+                    <h2 className="text-2xl font-bold mb-6 text-blue-700">No Boards Found</h2>
+                    <p className="mb-6 text-gray-600 text-center">You don't have any boards or lists yet. Create your first board to get started!</p>
+                    <button
+                        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                        onClick={async () => {
+                            const title = prompt('Enter board title:');
+                            if (title && title.trim()) {
+                                const response = await fetch('/api/boards', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        Authorization: `Bearer ${token}`
+                                    },
+                                    body: JSON.stringify({ title })
+                                });
+                                if (response.ok) {
+                                    const newBoard = await response.json();
+                                    setBoards([newBoard]);
+                                    setLists([]);
+                                } else {
+                                    alert('Failed to create board');
+                                }
+                            }
+                        }}
+                    >Create Board</button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <>
-            <div className="flex justify-end p-4">
+            <div className="flex justify-end items-center p-4 gap-4">
+                {username && (
+                    <span className="text-blue-900 font-semibold text-lg">Hello, {username}</span>
+                )}
                 <button className="bg-red-500 text-white px-4 py-1 rounded" onClick={handleLogout}>Logout</button>
             </div>
             <DragDropContext onDragEnd={onDragEnd}>

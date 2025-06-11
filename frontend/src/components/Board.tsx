@@ -13,9 +13,13 @@ const Board: React.FC<BoardProps> = ({ board, lists, setLists }) => {
     const title = prompt('Enter list title:');
     if (title && title.trim()) {
       try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`/api/boards/${board.id}/lists`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
           body: JSON.stringify({ title }),
         });
         if (!response.ok) throw new Error('Failed to add list');
@@ -29,8 +33,10 @@ const Board: React.FC<BoardProps> = ({ board, lists, setLists }) => {
 
   const handleDeleteList = async (listId: string) => {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`/api/boards/${board.id}/lists/${listId}`, {
         method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (!response.ok) throw new Error('Failed to delete list');
       setLists(prev => prev.filter(l => l.id !== listId));
@@ -61,6 +67,7 @@ const Board: React.FC<BoardProps> = ({ board, lists, setLists }) => {
               lists={lists}
               setLists={setLists}
               onDeleteList={handleDeleteList}
+              boardId={board.id}
             />
           ))}
         </div>

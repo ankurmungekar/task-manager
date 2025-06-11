@@ -1,6 +1,7 @@
 export interface List {
     id: string;
     title: string;
+    userId: string; // user who owns the list
     cards: Card[];
 }
 
@@ -9,4 +10,5 @@ export interface Card {
     title: string;
     description: string;
     dueDate?: string; // ISO date string
+    userId: string; // user who owns the card
 }
