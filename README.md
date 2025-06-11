@@ -1,6 +1,6 @@
-# Trello Clone
+# Task Manager
 
-This project is a simple task management application inspired by Trello, built using React with TypeScript for the frontend and Node.js with Express for the backend. The application allows users to create boards, lists, and draggable cards to manage their tasks effectively.
+This project is a simple task management application, built using React with TypeScript for the frontend and Node.js with Express for the backend. The application allows users to create boards, lists, and draggable cards to manage their tasks effectively.
 
 ## Project Structure
 
