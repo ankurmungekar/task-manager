@@ -9,4 +9,5 @@ export function setBoardRoutes(app: Router) {
     app.post('/api/boards', boardController.createBoard.bind(boardController));
     app.post('/api/boards/:boardId/lists', boardController.addListToBoard.bind(boardController));
     app.post('/api/boards/:boardId/lists/:listId/cards', boardController.addCardToList.bind(boardController));
+    app.patch('/api/boards/:boardId/move-card', boardController.moveCard.bind(boardController));
 }

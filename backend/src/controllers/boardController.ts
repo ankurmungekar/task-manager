@@ -91,4 +91,25 @@ export class BoardController {
             res.status(500).json({ error: 'Failed to add card to list.' });
         }
     }
+
+    public async moveCard(req: any, res: any) {
+        try {
+            const { boardId } = req.params;
+            const { sourceListId, destListId, sourceIndex, destIndex } = req.body;
+            const boards = await this.readBoards();
+            const board = boards.find((b: any) => b.id.toString() === boardId);
+            if (!board) return res.status(404).json({ error: 'Board not found.' });
+            const sourceList = board.lists.find((l: any) => l.id === sourceListId);
+            const destList = board.lists.find((l: any) => l.id === destListId);
+            if (!sourceList || !destList) return res.status(404).json({ error: 'List not found.' });
+            if (sourceIndex < 0 || sourceIndex >= sourceList.cards.length) return res.status(400).json({ error: 'Invalid source index.' });
+            const [movedCard] = sourceList.cards.splice(sourceIndex, 1);
+            if (!movedCard) return res.status(400).json({ error: 'Card not found at source index.' });
+            destList.cards.splice(destIndex, 0, movedCard);
+            await this.writeBoards(boards);
+            res.status(200).json({ success: true });
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to move card.' });
+        }
+    }
 }
