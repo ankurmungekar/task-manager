@@ -100,6 +100,11 @@ const App: React.FC = () => {
     };
 
     const handleLogout = () => {
+        // Emit leaveBoard on logout
+        if (socket && boards.length > 0 && username) {
+            const boardId = boardIdFromUrl || boards[0].id;
+            socket.emit('leaveBoard', { boardId, userId: username });
+        }
         setToken(null);
         setUsername(null);
         localStorage.removeItem('token');
